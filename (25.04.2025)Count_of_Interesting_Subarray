@@ -1,0 +1,77 @@
+🧩 Problem: Count Interesting Subarrays
+Given:
+
+An array of integers nums
+
+Two integers: modulo and k
+
+Task:
+Find the number of contiguous subarrays (i.e., subarrays) where the count of elements x such that x % modulo == k is congruent to k modulo modulo.
+
+In simpler words, count all subarrays where the number of elements satisfying x % modulo == k is such that:
+count % modulo == k
+🔍 Example
+Input:
+nums = [3,1,9,6]
+modulo = 3
+k = 0
+
+Output:
+2
+
+Explanation:
+We are looking for subarrays where the count of elements satisfying x % 3 == 0 is congruent to 0 mod 3.
+
+Subarrays that satisfy this:
+- [3,1,9] → contains 2 elements divisible by 3 → 2 % 3 = 2 ❌
+- [3,1,9,6] → contains 3 elements → 3 % 3 = 0 ✅
+- [9,6] → contains 2 elements → 2 % 3 = 2 ❌
+- [6] → contains 1 element → 1 % 3 = 1 ❌
+- [3] → 1 element → 1 % 3 = 1 ❌
+- [3,1] → 1 element → 1 % 3 = 1 ❌
+- [1,9,6] → 2 elements → 2 % 3 = 2 ❌
+
+Only **[3,1,9,6]** and the full array count.
+
+Final Answer = 2 ✅
+✅ Approach: Prefix Sum with Modulo Hashing
+We want to count subarrays where the number of elements satisfying nums[i] % modulo == k follows:
+(count of such elements in subarray) % modulo == k
+Steps:
+Loop through the array and maintain a running prefix count of valid elements:
+prefix += (nums[i] % modulo == k)
+
+Use a hash map mp to count how many times a particular prefix modulo has occurred so far.
+
+For current prefix, the number of valid subarrays ending at this index is equal to:
+mp[(prefix + modulo - k) % modulo]
+This ensures we’re checking how many past prefix values would make a subarray’s count % modulo == k.
+
+Update the map with the current prefix % modulo.
+
+💻 Code
+long long countInterestingSubarrays(vector<int>& nums, int modulo, int k)  {
+    const int n = nums.size();
+    unordered_map<int, int> mp;
+    mp[0] = 1;  // Base case: prefix count 0
+    mp.reserve(n);
+
+    long long ans = 0;
+    int prefix = 0;
+
+    for (int i = 0; i < n; i++) {
+        // Increment prefix count if current element matches the condition
+        prefix += ((nums[i] % modulo) == k);
+
+        // Add the number of valid subarrays ending at index i
+        ans += mp[(prefix + modulo - k) % modulo];
+
+        // Update map with current prefix % modulo
+        mp[prefix % modulo]++;
+    }
+
+    return ans;
+}
+🗂️ Tags
+HashMap · Prefix Sum · Subarray Count · Modular Arithmetic
+
