@@ -1,0 +1,89 @@
+🔍 Problem Understanding:
+You want to count how many subarrays (contiguous) contain both the minK and maxK values at least once and all elements in the subarray must be within the range [minK, maxK].
+
+✅ Stepwise Logic of the Function:
+long long countSubarrays(int nums[], int minK, int maxK, int n)
+Step 1: Initialization
+long long ans = 0;
+int maxi = -1;
+int mini = -1;
+int l = 0;
+ans = Final count of valid subarrays.
+
+mini = Last seen index where nums[i] == minK.
+
+maxi = Last seen index where nums[i] == maxK.
+
+l = Left boundary of valid subarrays. Reset when an out-of-range value is found.
+
+Step 2: Traverse the array
+for (int r = 0; r < n; r++) {
+We're sliding a window from left to right. r is the right end of the window.
+
+Step 3: Handle Invalid Elements
+if (nums[r] < minK || nums[r] > maxK) {
+    l = r + 1;
+    continue;
+}
+If the current element is outside the valid range, the window is broken.
+
+Move the left pointer l to r + 1 to start a new valid segment.
+
+Step 4: Update minK and maxK Positions
+if (nums[r] == minK)
+    mini = r;
+if (nums[r] == maxK)
+    maxi = r;
+Track the latest index where minK and maxK occur.
+
+Step 5: Count Valid Subarrays
+ans += max((min(maxi, mini) - l + 1), 0);
+For a valid subarray to exist, both minK and maxK must have been seen.
+
+So, take the minimum of mini and maxi, which gives the rightmost possible start of a valid subarray ending at r.
+
+The number of valid subarrays ending at index r is:
+min(mini, maxi) - l + 1
+
+Use max(..., 0) to avoid negative values if either minK or maxK hasn’t been found yet.
+
+🧠 Intuition:
+For every position r, you’re counting how many valid subarrays end at r.
+
+A subarray is valid only if:
+
+All its elements are within [minK, maxK]
+
+It includes at least one minK and one maxK
+
+🧪 Example:
+Let’s say:
+nums = [1,3,5,2,7,5], minK = 1, maxK = 5
+Possible valid subarrays would be those which include both 1 and 5, and all elements are between 1 and 5.
+
+
+class Solution {
+public:
+    long long countSubarrays(vector<int>& nums, int minK, int maxK) {
+        int n=nums.size();
+        long long ans=0;
+        int maxi=-1;
+        int mini=-1;
+        int l=0;
+        for(int r=0;r<n;r++)
+        {
+            if(nums[r]<minK||nums[r]>maxK)
+            {
+              l=r+1;
+              continue;
+            }
+
+            if(nums[r]==minK)
+            mini=r;
+            if(nums[r]==maxK)
+            maxi=r;
+            ans+=max((min(maxi,mini)-l+1),0);
+        }
+        return ans;
+    }
+};
