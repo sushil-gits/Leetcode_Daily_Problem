@@ -1,0 +1,199 @@
+📋 Problem Statement:
+Given an array nums of integers,
+count the number of indices i such that the following condition holds:
+
+2
+×
+(
+𝑛
+𝑢
+𝑚
+𝑠
+[
+𝑖
+]
++
+𝑛
+𝑢
+𝑚
+𝑠
+[
+𝑖
++
+2
+]
+)
+=
+𝑛
+𝑢
+𝑚
+𝑠
+[
+𝑖
++
+1
+]
+2×(nums[i]+nums[i+2])=nums[i+1]
+Here, you need to consider triplets of elements at indices i, i+1, and i+2.
+
+Make sure you don't go out of bounds of the array.
+
+Finally, return the count of such triplets.
+
+🧠 Approach (Step-by-Step):
+Initialize Variables:
+
+Let n be the size of the array (n = nums.size()).
+
+Initialize a counter count = 0 to keep track of how many valid triplets satisfy the condition.
+
+Loop through the Array:
+
+Start a for loop with i = 0 and run while i + 2 < n. (because we need three elements: nums[i], nums[i+1], and nums[i+2].)
+
+Check the Condition:
+
+For each i, check if:
+
+2
+×
+(
+𝑛
+𝑢
+𝑚
+𝑠
+[
+𝑖
+]
++
+𝑛
+𝑢
+𝑚
+𝑠
+[
+𝑖
++
+2
+]
+)
+=
+=
+𝑛
+𝑢
+𝑚
+𝑠
+[
+𝑖
++
+1
+]
+2×(nums[i]+nums[i+2])==nums[i+1]
+If the condition is true, increment the count by 1.
+
+Return the Result:
+After the loop finishes, return the value of count.
+
+✨ Full Code:
+int countSubarrays(vector<int>& nums) {
+    int n = nums.size();
+    int count = 0;
+    for (int i = 0; i + 2 < n; i++) {
+        if (2 * (nums[i] + nums[i+2]) == nums[i+1]) {
+            count++;
+        }
+    }
+    return count;
+}
+📚 Example:
+Suppose nums = [1, 4, 1, 5, 2].
+
+Now, let's check:
+
+For i = 0 → triplet (1,4,1):
+
+2
+×
+(
+1
++
+1
+)
+=
+4
+2×(1+1)=4
+
+2
+×
+2
+=
+4
+2×2=4
+
+4
+=
+4
+4=4 ✅ → count becomes 1.
+
+For i = 1 → triplet (4,1,5):
+
+2
+×
+(
+4
++
+5
+)
+=
+1
+2×(4+5)=1
+
+2
+×
+9
+=
+18
+2×9=18
+
+18
+≠
+1
+18
+
+=1 ❌
+
+For i = 2 → triplet (1,5,2):
+
+2
+×
+(
+1
++
+2
+)
+=
+5
+2×(1+2)=5
+
+2
+×
+3
+=
+6
+2×3=6
+
+6
+≠
+5
+6
+
+=5 ❌
+
+So, final count = 1.
+
+🛠 Key Points:
+Always ensure you don't access i+2 when it goes out of the array boundary.
+
+Carefully frame the condition based on the problem.
+
+Initialize variables properly to avoid runtime errors.
+
