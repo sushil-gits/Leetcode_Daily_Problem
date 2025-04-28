@@ -1,0 +1,44 @@
+📝 Problem Statement:
+You are given an array nums of integers and a number k.
+Find the number of subarrays where the product of the sum of the subarray and its length is strictly less than k.
+
+Formally, count the number of subarrays (i, j) such that:
+(sum of elements from i to j)×(j−i+1)<k
+
+
+💡 Approach (Sliding Window):
+Initialize two pointers, left and right, to represent the current subarray window.
+
+Maintain a running sum sum of the elements between left and right.
+
+Expand the window by moving the right pointer and adding nums[right] to sum.
+
+After adding, if the current subarray violates the condition (sum × window size) ≥ k, shrink the window by moving the left pointer forward and subtracting elements from sum until the condition is satisfied.
+
+For each right, after adjusting left, the number of valid subarrays ending at right is (right - left + 1).
+
+Add this count to the overall answer.
+
+Key Observations:
+Using a sliding window ensures we check all possible subarrays efficiently.
+This approach runs in O(n) time because each element is added and removed from the window at most once.
+
+################################################
+long long countSubarrays(vector<int>& nums, long long k) {
+        int n=nums.size();
+        long long count=0;
+        int left=0;
+        long long sum=0;
+        for(int right=0;right<n;right++)
+        {
+            sum+=nums[right];
+            while(left<=right && (sum*(right-left+1))>=k)
+            {
+                sum-=nums[left];
+                left++;
+            }
+            count+=(right-left+1);
+        }
+        return count;
+
+    }
