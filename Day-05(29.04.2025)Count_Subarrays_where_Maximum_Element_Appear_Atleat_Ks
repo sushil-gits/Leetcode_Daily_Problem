@@ -1,0 +1,74 @@
+✅ Step-by-step Approach:
+Initialize Variables:
+long long count = 0, ans = 0;
+int n = nums.size(), j = 0, maxi = INT_MIN;
+count: Tracks how many times the maximum element appears in the current window.
+
+ans: Final answer to store the number of valid subarrays.
+
+n: Length of the array.
+
+j: Left boundary of the sliding window.
+
+maxi: The maximum element in the array.
+
+Find the Maximum Element in the Array:
+for(int i:nums) maxi = max(maxi, i);
+Traverse the array once to find the global maximum value maxi.
+
+Use Sliding Window from j to i:
+for(int i = 0; i < n; i++) {
+Iterate i as the right boundary of the window.
+
+Count How Many Times maxi Appears in the Window:
+if(nums[i] == maxi) count++;
+If Window Has Exactly k Occurrences of maxi:
+if(count == k) ans += n - i;
+If the current window has exactly k maxis, then all subarrays ending at i, i+1, ..., n-1 are valid.
+
+So we add (n - i) to ans.
+
+Shrink the Window From the Left While Count is k:
+while(count == k){
+    j++;
+    if(nums[j-1] == maxi){
+        count--;
+        continue;
+    }
+    ans += n - i;
+}
+Slide j to the right to reduce the count of maxi.
+
+If the removed element (nums[j-1]) is maxi, decrement count.
+
+Else, for every valid shift that keeps count == k, add (n - i) again.
+
+Return the Final Answer:
+return ans;
+🔁 Example to Understand:
+nums = [1, 3, 1, 2, 3], k = 2
+maxi = 3
+The function would find subarrays where the number 3 (maximum element) appears exactly 2 times.
+
+
+class Solution {
+public:
+    long long countSubarrays(vector<int>& nums, int k) {
+    long long count = 0, ans = 0;
+        int n = nums.size(), j = 0, maxi = INT_MIN;
+        for(int i:nums) maxi = max(maxi, i);
+        for(int i=0;i<n;i++){
+            if(nums[i] == maxi) count++;
+            if(count == k) ans += n-i;
+            while(count == k){
+                j++;
+                if(nums[j-1] == maxi){
+                    count--;
+                    continue;
+                }
+                ans += n-i;
+            }
+        }
+        return ans;
+    }
+};
