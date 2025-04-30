@@ -1,0 +1,79 @@
+🔍 Problem Statement
+You are given a list of integers. Your task is to count how many numbers contain an even number of digits.
+
+✅ Function:
+int findNumbers(vector<int>& nums)
+🧠 Step-by-step Approach:
+Get the Size:
+int n = nums.size();
+Store the number of elements in the nums vector in variable n.
+
+Initialize a Counter:
+int even = 0;
+This will count how many numbers have an even number of digits.
+
+Traverse Each Number:
+for(int i = 0; i < n; i++) {
+Loop through each number in the nums array using index i.
+
+Initialize Digit Counter for Current Number:
+int count = 0;
+This variable will count the digits of the current number nums[i].
+
+Count the Digits of the Number:
+while(nums[i]) {
+    nums[i] /= 10;
+    count++;
+}
+Repeatedly divide nums[i] by 10 until it becomes 0.
+
+Each division removes one digit, so increment count on each step.
+
+Check if the Digit Count is Even:
+if(count % 2 == 0)
+    even++;
+If the digit count is even, increment the even counter.
+
+Return the Final Result:
+return even;
+After looping through all numbers, return how many had even digits.
+
+🧪 Example Dry Run
+Input: nums = [12, 345, 2, 6, 7896]
+Processing:
+
+12 → 2 digits → even → even = 1
+
+345 → 3 digits → odd → even = 1
+
+2 → 1 digit → odd → even = 1
+
+6 → 1 digit → odd → even = 1
+
+7896 → 4 digits → even → even = 2
+
+✅ Output: 2
+
+
+
+
+
+class Solution {
+public:
+    int findNumbers(vector<int>& nums) {
+        int n=nums.size();
+        int even=0;
+        for(int i=0;i<n;i++)
+        {
+            int count=0;
+            while(nums[i]){
+               nums[i]/=10;
+               count++;
+            }
+             if(count%2==0)
+            even++;
+        }
+        return even;
+        
+    }
+};
