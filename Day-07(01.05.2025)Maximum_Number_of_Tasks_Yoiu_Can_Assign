@@ -1,0 +1,121 @@
+🧾 Problem Statement: Maximum Tasks Assignment With Pills
+You are given:
+
+An array tasks[] of length n where each tasks[i] represents the minimum strength required to complete the i-th task.
+
+An array workers[] of length m where each workers[i] represents the initial strength of the i-th worker.
+
+You are also given:
+
+pills — the number of strength pills available.
+
+strength — the additional strength a worker gains temporarily after taking a pill.
+
+Goal:
+Determine the maximum number of tasks you can assign to the workers such that:
+
+Each worker can perform at most one task.
+
+Each task is assigned to only one worker.
+
+A worker can complete a task if their strength is greater than or equal to the required strength of that task.
+
+You can give a worker a pill (if available) to temporarily boost their strength by strength.
+
+✅ Constraints:
+1 <= tasks.length, workers.length <= 5 * 10^4
+
+0 <= pills <= workers.length
+
+0 <= strength <= 10^9
+
+0 <= tasks[i], workers[i] <= 10^9
+
+🧠 Approach: Binary Search + Greedy + Multiset
+🔹 Step 1: Sort both tasks and workers
+Sort tasks in increasing order of difficulty.
+
+Sort workers in increasing order of strength.
+
+🔹 Step 2: Use Binary Search to find the maximum number k of tasks we can assign
+Use low = 0 and high = min(tasks.size(), workers.size()).
+
+For each mid = k, check if it's possible to assign k tasks using a helper function Assign(k).
+
+🔹 Step 3: Define Assign(k, tasks, workers, pills, strength)
+Take the k hardest tasks (last k elements of sorted tasks).
+
+Take the k strongest workers (last k elements of sorted workers) and insert into a multiset.
+
+For each task from hardest to easiest:
+
+Try to find a worker whose strength ≥ task requirement. If found, assign and remove the worker.
+
+If not found, check if pills are left:
+
+If yes, find the weakest worker who can do the task after getting the pill boost.
+
+If such a worker exists, assign and remove them, and decrement pill count.
+
+If not, return false.
+
+🔹 Step 4: Continue binary search based on result of Assign(k)
+If Assign(k) is true, search for a higher k (low = mid + 1).
+
+Else, try a lower k (high = mid - 1).
+
+🔹 Step 5: Return the final answer
+Return the highest valid k for which tasks can be assigned.
+
+🔧 Time Complexity:
+Sorting: O(n log n + m log m)
+
+Binary Search: O(log(min(n, m)))
+
+Inside each Assign(k): O(k log k) due to multiset operations.
+
+Total Complexity: O((n + m) log(n + m) + log(min(n, m)) * k log k)
+
+class Solution {
+public:
+bool Assign(int k,vector<int>&tasks,vector<int>&workers,int pills,int strength)
+{
+    multiset<int>workerset(workers.end()-k,workers.end());
+    for(int i=k-1;i>=0;i--)
+    {
+        auto it=workerset.lower_bound(tasks[i]);
+        if(it!=workerset.end())
+        {
+        workerset.erase(it);
+        }
+        else
+        {
+            if(pills==0)
+            return false;
+            it=workerset.lower_bound(tasks[i]-strength);
+            if(it==workerset.end())
+            return false;
+            workerset.erase(it);
+            pills--;
+        }
+    }
+    return true;
+}
+    int maxTaskAssign(vector<int>& tasks, vector<int>& workers, int pills, int strength) {
+        sort(tasks.begin(),tasks.end());
+        sort(workers.begin(),workers.end());
+        int low=0,high=min(tasks.size(),workers.size()),ans=0;
+        while(low<=high)
+        {
+            int mid=(low+high)/2;
+            if(Assign(mid,tasks,workers,pills,strength))
+            {
+                ans=mid;
+                low=mid+1;
+            }
+            else
+            high=mid-1;
+        }
+        return ans;
+    }
+};
