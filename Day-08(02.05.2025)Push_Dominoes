@@ -1,0 +1,151 @@
+✅ Problem Statement:
+You are given a string dominoes representing a line of dominoes where:
+
+'.' represents a standing domino,
+
+'L' represents a domino falling to the left,
+
+'R' represents a domino falling to the right.
+
+Each domino will eventually fall due to the adjacent falling dominoes based on these rules:
+
+If a domino has a falling domino on its left, and no rightward push, it will fall left.
+
+If a domino has a falling domino on its right, and no leftward push, it will fall right.
+
+If a domino has falling dominoes on both sides, it will fall in the direction of the closer one, or remain standing if the distances are equal.
+
+You need to return the final state of the dominoes after all pushes.
+
+🧠 Step-by-Step Approach:
+Step 1: Initialize
+Get the length n of the string dominoes.
+
+Step 2: Loop through the string
+Use a for loop from i = 0 to i < n.
+
+Step 3: Skip non-standing dominoes
+If dominoes[i] != '.', just continue.
+
+Step 4: Find a group of consecutive dots
+Start from current i, initialize j = i + 1.
+
+While dominoes[j] == '.', keep incrementing j. This finds a continuous segment of standing dominoes.
+
+Three Major Cases:
+✅ Case 1: Segment is at the beginning (i == 0)
+If the next non-dot character (dominoes[j]) is 'L', it means dominoes from i to j-1 should all fall left.
+
+Change all characters from i to j-1 to 'L'.
+
+✅ Case 2: Segment is at the end (j == n)
+If the previous character (dominoes[i - 1]) is 'R', it means dominoes from i to j-1 should all fall right.
+
+Change all characters from i to j-1 to 'R'.
+
+✅ Case 3: Segment is between two pushed dominoes
+Three sub-cases based on dominoes[i-1] and dominoes[j]:
+
+🔹 Sub-case A: Left is 'R', right is not 'L'
+All dominoes between i and j-1 fall to the right ('R').
+
+🔹 Sub-case B: Right is 'L', left is not 'R'
+All dominoes between i and j-1 fall to the left ('L').
+
+🔹 Sub-case C: Left is 'R', right is 'L'
+Dominoes are pushed from both ends.
+
+Use two pointers:
+
+From i to half → fall right ('R')
+
+From j-1 to half → fall left ('L')
+
+If segment length is odd, the middle domino stays upright.
+
+Step 5: Continue iteration
+Move i forward as needed to skip already-processed dominoes.
+
+Step 6: Return the final string
+🔚 Final Output:
+Returns the updated string dominoes after simulating all the pushes.
+
+
+
+
+class Solution {
+public:
+    string pushDominoes(string dominoes) {
+        int n=dominoes.length();
+        for(int i=0;i<n;i++)
+        {
+            if(dominoes[i]=='.')
+            {
+                int j=i+1;
+                while(j<n && dominoes[j]=='.')
+                j++;
+
+                if(i==0)
+                {
+                    if(j<n && dominoes[j]=='L')
+                    {
+                        while(i<j)
+                        {
+                            dominoes[i]='L';
+                            i++;
+                        }
+                    }
+                    continue;
+                }
+                else if(j==n)
+                {
+                    if(dominoes[i-1]=='R')
+                    {
+                        while(i<j)
+                        {
+                            dominoes[i]='R';
+                            i++;
+                        }
+                    }
+                    i=j;
+                    continue;
+                }
+                if(dominoes[i-1]=='R' && dominoes[j]!='L')
+                {
+                    while(i!=j)
+                    {
+                        dominoes[i]='R';
+                        i++;
+                    }
+                }
+
+               else if(dominoes[j]=='L' && dominoes[i-1]!='R')
+               {
+                while(i!=j)
+                {
+                    dominoes[i]='L';
+                    i++;
+                }
+               }
+               else if(dominoes[i-1]=='R' && dominoes[j]=='L')
+               {
+                int d=j-i;
+                int half=i+(d/2);
+                while(i<half)
+                {
+                    dominoes[i]='R';
+                    i++;
+                }
+                if(d%2==1)
+                i++;
+                while(i<j)
+                {
+                    dominoes[i]='L';
+                    i++;
+                }
+               }
+            }
+        }
+        return dominoes;
+    }
+};
