@@ -1,0 +1,96 @@
+✅ Problem Statement:
+You are given two arrays tops and bottoms, each of length n, representing the top and bottom halves of dominoes respectively. Each domino has a number between 1 and 6 on both sides.
+
+Your goal is to make all the values in tops or all the values in bottoms the same by rotating some dominoes (swapping tops[i] with bottoms[i]). Return the minimum number of rotations needed so that all the values in one row are the same.
+
+If it is not possible, return -1.
+
+Example:
+Input: tops = [2,1,2,4,2,2], bottoms = [5,2,6,2,3,2]
+Output: 2
+Explanation: Rotate index 1 and 3 to make all tops equal to 2.
+🔍 Step-by-Step Approach of the Code:
+int minDominoRotations(vector<int>& tops, vector<int>& bottoms) {
+    int res = INT_MAX;
+    for (int i = 1; i <= 6; i++) {
+        int top = 0, bottom = 0;
+        bool valid = true;
+        for (int j = 0; j < tops.size(); j++) {
+            if (tops[j] != i && bottoms[j] != i) {
+                valid = false;
+                break;
+            }
+            if (tops[j] != i) top++;
+            if (bottoms[j] != i) bottom++;
+        }
+        if (valid)
+            res = min(res, min(top, bottom));
+    }
+    return res == INT_MAX ? -1 : res;
+}
+🧠 Explanation:
+Step 1: Initialize a result variable
+int res = INT_MAX;
+We initialize res to a very large value so we can later update it with the minimum number of rotations required.
+
+Step 2: Try each value from 1 to 6
+for (int i = 1; i <= 6; i++)
+There are only 6 possible numbers on dominoes, so we check each number i from 1 to 6 to see if it can be the candidate number for all tops or bottoms.
+
+Step 3: For each candidate number i, check every domino
+int top = 0, bottom = 0;
+bool valid = true;
+for (int j = 0; j < tops.size(); j++) {
+    if (tops[j] != i && bottoms[j] != i) {
+        valid = false;
+        break;
+    }
+    if (tops[j] != i) top++;
+    if (bottoms[j] != i) bottom++;
+}
+If neither side of the domino has the number i, then it's impossible to make all values i. So mark valid = false and break.
+
+Otherwise:
+
+If the top is not i, we’d need to rotate this domino to bring i to the top → top++.
+
+If the bottom is not i, we’d need to rotate to bring i to the bottom → bottom++.
+
+Step 4: If it was possible, update the result
+if (valid)
+    res = min(res, min(top, bottom));
+Take the minimum of rotations needed for tops or bottoms and update the result.
+
+Step 5: After checking all values, return result
+return res == INT_MAX ? -1 : res;
+If res is still INT_MAX, then no solution was found → return -1.
+
+
+
+
+class Solution {
+public:
+    int minDominoRotations(vector<int>& tops, vector<int>& bottoms) {
+        int res=INT_MAX;
+        for(int i=1;i<=6;i++)
+        {
+            int top=0,bottom=0;
+            bool valid=true;
+            for(int j=0;j<tops.size();j++)
+            {
+                if(tops[j]!=i && bottoms[j]!=i)
+                {
+                    valid=false;
+                    break;
+                }
+                if(tops[j]!=i)
+                top++;
+                if(bottoms[j]!=i)
+                bottom++;
+            }
+            if(valid)
+            res=min(res,min(top,bottom));
+        }
+        return res==INT_MAX ?-1:res;
+    }
+};
