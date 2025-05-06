@@ -1,0 +1,60 @@
+🔷 Problem Statement:
+Given a zero-based permutation nums (i.e., it contains all integers from 0 to n - 1, where n is the length of nums), construct a new array ans such that:
+ans[i]=nums[nums[i]]
+Return the array ans.
+
+📘 This problem is from LeetCode: "Build Array from Permutation" (LeetCode #1920).
+
+🔷 Stepwise Approach:
+Input: A vector nums of integers which is a permutation of numbers from 0 to n-1.
+
+Initialize Output Vector:
+
+Create an empty vector ans to store the result.
+
+Iterate Over the Input Array:
+
+For each index i in the range 0 to nums.size() - 1:
+
+Fetch the value at index nums[i]. This is done using nums[nums[i]].
+
+Store this value in a temporary variable a.
+
+Push the Value to the Result Vector:
+
+Append a to the result vector ans.
+
+Return the Result:
+
+After the loop ends, return the filled vector ans.
+
+🔷 Example:
+Input: nums = [0, 2, 1, 5, 3, 4]
+Process:
+
+ans[0] = nums[nums[0]] = nums[0] = 0
+
+ans[1] = nums[nums[1]] = nums[2] = 1
+
+ans[2] = nums[nums[2]] = nums[1] = 2
+
+ans[3] = nums[nums[3]] = nums[5] = 4
+
+ans[4] = nums[nums[4]] = nums[3] = 5
+
+ans[5] = nums[nums[5]] = nums[4] = 3
+
+Output: [0, 1, 2, 4, 5, 3]
+#####################################
+class Solution {
+public:
+    vector<int> buildArray(vector<int>& nums) {
+        vector<int>ans;
+        int a;
+        for(int i=0;i<nums.size();i++){
+            a=nums[nums[i]];
+            ans.push_back(a);
+        }
+        return ans;
+    }
+};
