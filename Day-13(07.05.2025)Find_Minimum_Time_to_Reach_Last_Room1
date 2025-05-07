@@ -1,0 +1,109 @@
+🧾 Problem Statement:
+You are in a dungeon with n x m rooms laid out in a grid.
+Each cell (i, j) in the grid has a moveTime[i][j] which tells you the earliest time (in seconds) at which you are allowed to enter that room.
+
+You start at cell (0, 0) at time t = 0.
+
+You can only move to adjacent cells (up, down, left, right), and each move takes exactly 1 second.
+
+You are not allowed to enter a room before its moveTime[i][j].
+
+Your goal is to reach cell (n-1, m-1) in minimum time.
+
+🧠 Step-by-Step Approach (Using Dijkstra's Algorithm)
+This problem is a variation of the shortest path in a weighted graph, where the weight (waiting time) depends on moveTime.
+
+✅ 1. Initialize data structures
+priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> qu;
+vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
+Use a min-heap (priority_queue) to always explore the room that can be reached earliest.
+
+dist[i][j] keeps the earliest known time to reach cell (i, j), initialized to INT_MAX.
+
+✅ 2. Start from (0, 0)
+dist[0][0] = 0;
+qu.push({0, {0, 0}});
+You start at room (0, 0) at time 0.
+
+✅ 3. Define movement directions
+int drow[4] = {0, -1, 0, 1}; // left, up, right, down
+int dcol[4] = {-1, 0, 1, 0};
+This helps you move to the four adjacent directions.
+
+✅ 4. Run Dijkstra-style loop
+while (!qu.empty()) {
+    int t = qu.top().first;
+    int row = qu.top().second.first;
+    int col = qu.top().second.second;
+    qu.pop();
+Always process the cell that can be reached the earliest.
+
+If it's the destination cell (n-1, m-1), return the current time.
+
+✅ 5. Explore neighbors
+for (int i = 0; i < 4; i++) {
+    int n_row = row + drow[i];
+    int n_col = col + dcol[i];
+Check the four adjacent cells.
+
+Skip invalid positions (outside grid).
+
+✅ 6. Calculate time to reach neighbor
+int diff = max(t, moveTime[n_row][n_col]) + 1;
+You can only move at time t + 1, but you may have to wait if the moveTime of the new cell is later.
+
+So, take the max of current time and moveTime, then add 1 second to account for the move.
+
+✅ 7. Update distance and push to queue
+if (diff < dist[n_row][n_col]) {
+    dist[n_row][n_col] = diff;
+    qu.push({diff, {n_row, n_col}});
+}
+If this path reaches the neighbor earlier than before, update it and push it into the priority queue.
+
+✅ 8. If destination is unreachable
+return -1;
+After exploring all options, if destination (n-1, m-1) is never reached, return -1.
+
+✅ Final Thoughts
+This approach ensures we always take the shortest-time path first using a greedy priority queue, which is perfect for such grid-based Dijkstra problems.
+
+The trick is correctly handling the waiting condition using moveTime.
+
+
+class Solution {
+public:
+         int drow[4]={0,-1,0,1};
+         int dcol[4]={-1,0,1,0};
+    int minTimeToReach(vector<vector<int>>& moveTime) {
+        int n=moveTime.size();
+        int m=moveTime[0].size();
+        priority_queue<pair<int,pair<int,int>>,vector<pair<int,pair<int,int>>>,greater<pair<int,pair<int,int>>>>qu; //{t,{r,c}}
+        vector<vector<int>>dist(n,vector<int>(m,INT_MAX));
+        dist[0][0]=0;
+        qu.push({0,{0,0}});
+        while(!qu.empty()){
+            int t=qu.top().first;
+            int row=qu.top().second.first;
+            int col=qu.top().second.second;
+            qu.pop();
+            if(row==n-1 && col==m-1) return t;
+            for(int i=0;i<4;i++){
+                int n_row=row+drow[i];
+                int n_col=col+dcol[i];
+                
+                if(n_row>=0 && n_row<n && n_col>=0 && n_col<m ){
+                    int diff=max(t,moveTime[n_row][n_col])+1;
+                    
+                    if(diff<dist[n_row][n_col]){
+                        dist[n_row][n_col]=diff;
+                        qu.push({diff,{n_row,n_col}});
+                    }
+                    
+                }
+            }
+        }
+        
+        return -1;
+    }
+};
