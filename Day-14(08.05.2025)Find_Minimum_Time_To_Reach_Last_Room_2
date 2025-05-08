@@ -1,0 +1,108 @@
+🔹 Problem Statement:
+You are given a 2D grid moveTime where each cell [i][j] represents the earliest time at which you can enter that cell. Starting from the top-left cell (0, 0), your goal is to reach the bottom-right cell (n-1, m-1) in the minimum possible time.
+
+You can move in 4 directions (up, down, left, right), but you are only allowed to enter a cell at or after its moveTime. Additionally, every movement alternates between taking 1 or 2 units of time—starting with 1, then 2, then 1, and so on.
+
+Return the minimum time required to reach the destination.
+
+🔹 Stepwise Approach:
+1. Initialization:
+Get grid dimensions n and m.
+
+Create a 2D vector bestTime[n][m] initialized to INT_MAX to store the shortest known time to reach each cell.
+
+Define all 4 movement directions.
+
+Use a min-heap (priority queue) to process nodes by earliest possible time. Each element in the heap is a tuple:
+(currentTime, row, col, nextMoveTime)
+2. Start from (0, 0):
+Push the start cell (0, 0) with time 0 and the first move time as 1.
+
+3. Dijkstra-like BFS Loop:
+While the priority queue is not empty:
+
+Pop the cell with the smallest time.
+
+If this time is already worse than the best known time to this cell, skip it.
+
+Update bestTime[i][j] with the current time.
+
+If the destination (n-1, m-1) is reached, return the current time.
+
+4. Explore All Directions:
+For each direction (up/down/left/right):
+
+Compute the new cell (x, y).
+
+Skip if it's out of bounds.
+
+Determine the waiting time wait = moveTime[x][y].
+
+Compute the next move cost as 1 or 2 (it alternates).
+
+If the cell's wait time is greater than the current time, you must wait till wait + nextMoveTime.
+
+Otherwise, you can move directly at time + nextMoveTime.
+
+Special handling for the starting cell (0,0): Even if wait time is <= current time, force wait.
+
+If this nextTime is better than bestTime[x][y], push (nextTime, x, y, futureMoveTime) into the priority queue.
+
+5. If Loop Ends Without Reaching Destination:
+Return -1. Though, under valid conditions, the destination should always be reachable.
+
+🔹 Example:
+vector<vector<int>> moveTime = {
+    {0, 2},
+    {2, 4}
+};
+In this case:
+
+You can start at (0,0) at time 0.
+
+You must reach (1,1) while obeying move times and alternating costs.
+
+
+
+class Solution {
+public:
+    int minTimeToReach(vector<vector<int>>& moveTime) {
+        int n = moveTime.size();
+        int m = moveTime[0].size();
+        vector<vector<int>> bestTime(n, vector<int>(m, INT_MAX));
+        vector<vector<int>> directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+        // Min-heap: [time, i, j, nextMoveTime]
+        using T = tuple<int, int, int, int>;
+        priority_queue<T, vector<T>, greater<>> pq;
+        pq.emplace(0, 0, 0, 0);
+
+        while (!pq.empty()) {
+            auto [time, i, j, nextMoveTime] = pq.top(); pq.pop();
+
+            if (time >= bestTime[i][j]) continue;
+            bestTime[i][j] = time;
+
+            if (i == n - 1 && j == m - 1) return time;
+
+            for (auto& d : directions) {
+                int x = i + d[0], y = j + d[1];
+                if (x >= 0 && x < n && y >= 0 && y < m) {
+                    int wait = moveTime[x][y];
+                    int futureMove = nextMoveTime == 1 ? 2 : 1;
+                    int nextTime = wait > time ? wait + futureMove : time + futureMove;
+
+                    if (i == 0 && j == 0 && wait <= time) {
+                        nextTime = wait + futureMove;
+                    }
+
+                    if (nextTime < bestTime[x][y]) {
+                        pq.emplace(nextTime, x, y, futureMove);
+                    }
+                }
+            }
+        }
+
+        return -1; // Should never reach
+    }
+};
