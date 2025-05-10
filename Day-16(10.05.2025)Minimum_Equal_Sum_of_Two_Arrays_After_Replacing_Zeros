@@ -1,0 +1,112 @@
+🧾 Problem Statement:
+You are given two integer arrays nums1 and nums2. Both arrays can contain zeroes, which are considered placeholders that can be changed to any positive integer ≥ 1. Your goal is to replace all zeroes in both arrays with 1 and then check if the two arrays can have the same total sum.
+If it is not possible to make their sums equal, return -1.
+Otherwise, return the maximum of the two modified sums (which would be equal).
+
+✅ Stepwise Approach:
+🔹 Step 1: Initialize variables
+Use sum1 and sum2 to keep track of the total sum of nums1 and nums2 respectively.
+
+Use zero1 and zero2 to count the number of zeroes in nums1 and nums2.
+long long sum1 = 0;
+long long sum2 = 0;
+int zero1 = 0;
+int zero2 = 0;
+🔹 Step 2: Traverse nums1
+Iterate through each element in nums1.
+
+If an element is 0, change it to 1 (minimum valid value), and increment zero1.
+
+Add each (possibly modified) element to sum1.
+for(int i = 0; i < nums1.size(); i++) 
+{
+    if(nums1[i] == 0) 
+    {
+        nums1[i] = 1;
+        zero1++;
+    }
+    sum1 += nums1[i];
+}
+🔹 Step 3: Traverse nums2
+Repeat the same process as above for nums2, updating zero2 and sum2.
+for(int i = 0; i < nums2.size(); i++) 
+{
+    if(nums2[i] == 0) 
+    {
+        nums2[i] = 1;
+        zero2++;
+    }
+    sum2 += nums2[i];
+}
+🔹 Step 4: Feasibility check
+If the smaller sum array has no zeroes, it cannot be increased further. Hence, it's impossible to make the sums equal.
+
+So if:
+
+sum1 < sum2 and zero1 == 0, return -1.
+
+sum2 < sum1 and zero2 == 0, return -1.
+if(sum1 < sum2 && zero1 == 0)
+{
+    return -1;
+}
+if(sum2 < sum1 && zero2 == 0)
+{
+    return -1;
+}
+🔹 Step 5: Return Result
+If both arrays can be adjusted to have equal sums, return the maximum of sum1 and sum2, since they are made equal.
+return max(sum1, sum2);
+🧠 Summary:
+This algorithm tries to make both arrays equal in sum by replacing zeroes with 1s (the minimum). If that’s not sufficient due to lack of zeroes to increase one of the sums, it returns -1. Otherwise, it returns the equal sum.
+
+
+class Solution 
+{
+public:
+    long long minSum(vector<int>& nums1, vector<int>& nums2) 
+    {
+        long long sum1 = 0;
+        long long sum2 = 0;
+        int zero1 = 0;
+        int zero2 = 0;
+
+        // Step 1: Traverse nums1
+        for(int i = 0; i < nums1.size(); i++) 
+        {
+            if(nums1[i] == 0) 
+            {
+                nums1[i] = 1;
+                zero1++;
+            }
+            
+            sum1 += nums1[i];
+        }
+
+        // Step 2: Traverse nums2
+        for(int i = 0; i < nums2.size(); i++) 
+        {
+            if(nums2[i] == 0) 
+            {
+                nums2[i] = 1;
+                zero2++;
+            }
+            
+            sum2 += nums2[i];
+        }
+
+        // Step 3: Feasibility check
+        if(sum1 < sum2 && zero1 == 0)
+        {
+            return -1;
+        }
+
+        if(sum2 < sum1 && zero2 == 0)
+        {
+            return -1;
+        }
+
+        // Step 4: Return the minimal equal sum
+        return max(sum1, sum2);
+    }
+};
