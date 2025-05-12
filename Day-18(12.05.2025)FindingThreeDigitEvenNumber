@@ -1,0 +1,107 @@
+Problem Statement:
+
+You are given an array digits containing digits from 0 to 9. Your task is to find all unique 3-digit even numbers that can be formed using digits from the array (each digit can be used at most as many times as it appears in digits). Return the numbers in increasing order.
+
+A 3-digit even number must:
+
+1. Be in the range 100 to 999.
+
+
+2. End with an even digit (0, 2, 4, 6, 8).
+
+
+
+
+---
+
+Stepwise Approach:
+
+Step 1: Count Frequency of Input Digits
+
+vector<int> freq(10, 0);
+for (int d : digits) freq[d]++;
+
+Create a frequency array freq[10] to count how many times each digit (0–9) appears in digits.
+
+
+
+---
+
+Step 2: Loop Through All 3-Digit Even Numbers
+
+for (int i = 100; i < 1000; i += 2)
+
+Check all even numbers from 100 to 998 (i.e., i += 2 ensures the number is even).
+
+Each valid number must end in 0, 2, 4, 6, or 8.
+
+
+
+---
+
+Step 3: Break the Number into Digits
+
+int a = i / 100, b = (i / 10) % 10, c = i % 10;
+
+a = hundreds digit
+
+b = tens digit
+
+c = units digit
+
+
+
+---
+
+Step 4: Count Frequency of Digits in the Current Number
+
+vector<int> local(10, 0);
+local[a]++; local[b]++; local[c]++;
+
+Create a temporary frequency array local[10] for the current number i.
+
+
+
+---
+
+Step 5: Check if the Number Can Be Formed from Input Digits
+
+bool valid = true;
+for (int j = 0; j < 10; j++) {
+    if (local[j] > freq[j]) {
+        valid = false;
+        break;
+    }
+}
+
+Compare if for every digit j, the required count (local[j]) does not exceed the available count (freq[j]).
+
+
+
+---
+
+Step 6: Add Valid Number to Result
+
+if (valid) res.push_back(i);
+
+If the number i can be formed, add it to the result list.
+
+
+
+---
+
+Step 7: Return the Result
+
+return res;
+
+Return the final list of valid 3-digit even numbers.
+
+
+
+---
+
+Time Complexity:
+
+Looping through 450 numbers (from 100 to 998 even numbers), and for each, comparing frequencies (constant time).
+
+So, total time complexity is O(1) — very efficient due to fixed limits.
