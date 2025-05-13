@@ -1,0 +1,117 @@
+Problem Statement:
+Given a string s consisting of lowercase English letters and an integer t, perform t transformations on the string according to the following rules:
+
+In each transformation, every occurrence of the letter 'z' is replaced by 'a' and 'b' (i.e., it splits into 'a' and 'b').
+
+All other letters ('a' to 'y') are replaced by the next letter in the alphabet (e.g., 'a' → 'b', 'b' → 'c', ..., 'y' → 'z').
+
+After performing t transformations, return the length of the resulting string modulo 
+10
+9
++
+7
+10 
+9
+ +7.
+
+Stepwise Approach:
+Step 1: Understand the Transformation Rules
+'z' → 'a' and 'b': Each 'z' splits into two letters ('a' and 'b').
+
+Other letters (a-y) → next letter: Each letter increments by 1 in the alphabet (e.g., 'a' → 'b', 'b' → 'c', etc.).
+
+Step 2: Track Letter Counts Efficiently
+Instead of modifying the string directly (which can be very slow for large t), track the count of each letter in the string after each transformation.
+
+Use an array count[130] (covering all lowercase letters) to store the frequency of each character.
+
+Step 3: Perform Transformations
+For each transformation (t times):
+
+Create a temporary array temp[130] to store the new counts.
+
+Process letters from 'z' down to 'a' to avoid overwriting counts prematurely.
+
+If the current character is 'z', increment temp['a'] and temp['b'] by its count (since 'z' splits into 'a' and 'b').
+
+For other characters ('a' to 'y'), increment temp[ch + 1] by their count (since they transform into the next letter).
+
+Update count with temp for the next iteration.
+
+Step 4: Compute the Result
+After t transformations, sum up all the counts of letters in count[].
+
+Return the total count modulo 
+10
+9
++
+7
+10 
+9
+ +7.
+
+Step 5: Edge Cases
+If t = 0, return the original string length.
+
+If s is empty, return 0.
+
+Solution Code:
+cpp
+#include <vector>
+#include <string>
+using namespace std;
+
+int lengthAfterTransformations(string s, int t) {
+    int n = s.size();
+    long ans = 0, mod = 1e9 + 7;
+
+    vector<long> count(130, 0); // To store counts of each character (a-z)
+    for (auto &ch : s) count[ch] += 1;
+
+    while (t--) {
+        vector<long> temp(130, 0);
+        for (char ch = 'z'; ch >= 'a'; ch--) {
+            if (ch == 'z') {
+                temp['a'] = (temp['a'] + count[ch]) % mod;
+                temp['b'] = (temp['b'] + count[ch]) % mod;
+            } else {
+                temp[ch + 1] = (temp[ch + 1] + count[ch]) % mod;
+            }
+        }
+        count = temp;
+    }
+
+    for (char ch = 'a'; ch <= 'z'; ch++) {
+        ans = (ans + count[ch]) % mod;
+    }
+
+    return (int)(ans % mod);
+}
+Explanation:
+Initialization:
+
+We start by counting the frequency of each character in the input string s.
+
+Transformations:
+
+For each transformation, we process characters from 'z' to 'a' to avoid overwriting counts.
+
+If the character is 'z', we split its count into 'a' and 'b'.
+
+For other characters, we increment their next character's count.
+
+Result Calculation:
+
+After t transformations, we sum the counts of all characters to get the total length of the transformed string.
+
+The result is returned modulo 
+10
+9
++
+7
+10 
+9
+ +7 to handle large numbers.
+
+This approach efficiently handles the transformations by tracking letter counts, avoiding the exponential growth of the string length explicitly. The time complexity is 
+O(t×26), which is optimal for large t.
