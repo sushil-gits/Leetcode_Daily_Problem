@@ -1,0 +1,150 @@
+🧩 Problem Statement (Inferred)
+Given:
+
+A lowercase string s.
+
+An integer t representing the number of transformations.
+
+A vector nums of size 26, where nums[i] defines how the character 'a' + i transforms into other characters.
+
+Rules of Transformation:
+Each character 'a' + i transforms into:
+
+nums[i] characters, each computed as (i + j + 1) % 26 for j = 0 to nums[i] - 1.
+
+You must perform this transformation t times and return the total number of characters in the final string, modulo 1e9 + 7.
+
+🪜 Step-by-Step Explanation
+🔢 Step 1: Define Modulo Constant
+const int MOD = 1e9 + 7;
+All arithmetic operations are done under this modulo to avoid overflow.
+
+🧮 Step 2: Matrix Multiplication
+vector<vector<long long>> matrixMultiply(const vector<vector<long long>>& A, const vector<vector<long long>>& B)
+This is a standard square matrix multiplication function with modulo. Used in exponentiation.
+
+🧠 Step 3: Fast Matrix Exponentiation
+vector<vector<long long>> matrixExponentiation(vector<vector<long long>>& M, int exp)
+Raises a matrix M to the power exp using binary exponentiation (O(log t) multiplications), to efficiently compute repeated transformations.
+
+🔤 Step 4: Build Transformation Matrix
+vector<vector<long long>> M(size, vector<long long>(size, 0));
+You create a 26x26 matrix M, where M[i][j] indicates how many times character i transforms into character j.
+
+For each character i from 'a' to 'z':
+for (int j = 0; j < nums[i]; j++) {
+    M[i][(i + j + 1) % size] += 1;
+}
+This loop populates M based on nums.
+
+⚡ Step 5: Apply Matrix Exponentiation
+M = matrixExponentiation(M, t);
+This raises the matrix to the tth power to simulate all transformations in one go.
+
+🧮 Step 6: Count Initial Characters in the String
+vector<long long> initialCount(size, 0);
+for (char c : s) {
+    initialCount[c - 'a'] += 1;
+}
+Creates a frequency vector initialCount of size 26.
+
+🔁 Step 7: Apply Transformed Matrix on Character Count
+for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) {
+        resultCount[j] = (resultCount[j] + M[i][j] * initialCount[i]) % MOD;
+    }
+}
+This simulates applying the transformation matrix M to the character count vector.
+
+🧾 Step 8: Compute the Total Result Length
+long long result = 0;
+for (long long count : resultCount) {
+    result = (result + count) % MOD;
+}
+return result;
+Sums up all values in the final count vector to get the total length of the transformed string.
+
+🧪 Example (Hypothetical)
+Let:
+s = "abc"
+t = 2
+nums = [1, 2, 1, 0, 0, ..., 0]
+'a' → 1 char: (0+0+1)%26 = 1 → 'b'
+
+'b' → 2 chars: (1+0+1)%26 = 2, (1+1+1)%26 = 3 → 'c', 'd'
+
+'c' → 1 char: (2+0+1)%26 = 3 → 'd'
+
+Each transformation follows these rules over 2 iterations.
+
+✅ Summary
+What This Code Does:
+Converts character transformation logic into matrix multiplication.
+
+Uses fast exponentiation to simulate t rounds efficiently.
+
+Applies the resulting transformation to the input string.
+
+Outputs the final character count (length of transformed string) modulo 1e9 + 7.
+
+
+
+class Solution { 
+public: 
+    const int MOD = 1e9 + 7; 
+ 
+    vector<vector<long long>> matrixMultiply(const vector<vector<long long>>& A, const vector<vector<long long>>& B) { 
+        int size = A.size(); 
+        vector<vector<long long>> C(size, vector<long long>(size, 0)); 
+        for (int i = 0; i < size; i++) { 
+            for (int j = 0; j < size; j++) { 
+                for (int k = 0; k < size; k++) { 
+                    C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % MOD; 
+                } 
+            } 
+        } 
+        return C; 
+    } 
+ 
+    vector<vector<long long>> matrixExponentiation(vector<vector<long long>>& M, int exp) { 
+        int size = M.size(); 
+        vector<vector<long long>> result(size, vector<long long>(size, 0)); 
+        for (int i = 0; i < size; i++) { 
+            result[i][i] = 1; 
+        } 
+        while (exp > 0) { 
+            if (exp % 2 == 1) { 
+                result = matrixMultiply(result, M); 
+            } 
+            M = matrixMultiply(M, M); 
+            exp /= 2; 
+        } 
+        return result; 
+    } 
+ 
+    int lengthAfterTransformations(const string& s, int t, vector<int>& nums) { 
+        int size = 26; 
+        vector<vector<long long>> M(size, vector<long long>(size, 0)); 
+        for (int i = 0; i < size; i++) { 
+            for (int j = 0; j < nums[i]; j++) { 
+                M[i][(i + j + 1) % size] += 1; 
+            } 
+        } 
+        M = matrixExponentiation(M, t); 
+        vector<long long> initialCount(size, 0); 
+        for (char c : s) { 
+            initialCount[c - 'a'] += 1; 
+        } 
+        vector<long long> resultCount(size, 0); 
+        for (int i = 0; i < size; i++) { 
+            for (int j = 0; j < size; j++) { 
+                resultCount[j] = (resultCount[j] + M[i][j] * initialCount[i]) % MOD; 
+            } 
+        } 
+        long long result = 0; 
+        for (long long count : resultCount) { 
+            result = (result + count) % MOD; 
+        } 
+        return result; 
+    } 
+};
