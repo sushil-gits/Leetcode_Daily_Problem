@@ -1,0 +1,77 @@
+✅ Problem Statement
+You are given:
+
+A list of words: vector<string> words
+
+A list of group IDs: vector<int> groups
+where groups[i] represents the group to which words[i] belongs.
+
+Your task is to return the longest subsequence of words such that no two consecutive words in the subsequence belong to the same group.
+
+🧠 Intuition
+To maintain the constraint (no two consecutive same-group words), we:
+
+Always include the first word.
+
+Then iterate through the remaining words, and only include a word if its group is different from the group of the previous word.
+
+This way, we maintain a subsequence with group-alternating words.
+
+🔍 Step-by-Step Approach
+Input:
+
+words = a vector of strings
+
+groups = a vector of integers of the same length as words
+
+Initialization:
+
+Create an empty result vector s to store the final subsequence.
+
+Push the first word words[0] into s (since it's the starting point).
+
+Loop through the rest of the words:
+
+For i = 1 to n-1:
+
+Check if the current group groups[i] is different from the previous group groups[i-1].
+
+If different:
+
+Append words[i] to the result subsequence s.
+
+Return the result vector s.
+
+✅ Code with Comments
+vector<string> getLongestSubsequence(vector<string>& words, vector<int>& groups) {
+    int n = groups.size();
+    vector<string> s;
+
+    // Step 1: Always include the first word
+    s.push_back(words[0]);
+
+    // Step 2: Iterate through the rest of the words
+    for (int i = 1; i < n; i++) {
+        // Step 3: If current group is different from previous, include the word
+        if (groups[i] != groups[i - 1]) {
+            s.push_back(words[i]);
+        }
+    }
+
+    // Step 4: Return the resulting subsequence
+    return s;
+}
+🔧 Example
+Input:
+words  = {"apple", "banana", "cat", "dog", "egg"}
+groups = {1,       1,        2,     2,     3}
+
+Processing:
+- Include "apple" (group 1)
+- Skip "banana" (same group as "apple")
+- Include "cat" (group 2 ≠ previous group)
+- Skip "dog" (same group as "cat")
+- Include "egg" (group 3 ≠ previous group)
+
+Output:
+["apple", "cat", "egg"]
