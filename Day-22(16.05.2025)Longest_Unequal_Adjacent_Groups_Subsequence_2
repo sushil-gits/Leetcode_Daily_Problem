@@ -1,0 +1,154 @@
+Problem Statement: Find the Longest Subsequence of Words with Alternating Groups and Differing by One Character
+Given an array of strings words and an array of integers groups of the same length, where groups[i] represents the group number of words[i], find the longest subsequence of words such that:
+
+Adjacent words in the subsequence belong to different groups (groups[i] != groups[j] for consecutive words i and j in the subsequence).
+
+Adjacent words in the subsequence differ by exactly one character (as defined by differByOneChar function).
+
+Return the lexicographically smallest subsequence if there are multiple subsequences of the maximum length.
+
+Example:
+Input:
+
+words = ["abc", "abd", "acd", "aad", "bcd"], 
+groups = [1, 2, 1, 2, 1]
+Output:
+
+["abc", "abd", "acd", "aad", "bcd"]
+Explanation:
+The subsequence ["abc", "abd", "acd", "aad", "bcd"] satisfies:
+
+Adjacent words have different group numbers (1, 2, 1, 2, 1).
+
+Each adjacent pair differs by exactly one character ("abc" -> "abd", "abd" -> "acd", etc.).
+
+Stepwise Approach
+Intuition:
+We need to find the longest subsequence of words where:
+
+Consecutive words are from different groups.
+
+Consecutive words differ by exactly one character.
+
+This resembles the Longest Increasing Subsequence (LIS) problem but with additional constraints on group alternation and character difference.
+
+Steps:
+Check Character Difference (differByOneChar):
+
+A helper function to check if two words of the same length differ by exactly one character.
+
+Dynamic Programming (DP) Setup:
+
+dp[i] stores the length of the longest valid subsequence ending at index i.
+
+parent[i] stores the index of the previous word in the subsequence ending at i.
+
+DP Transition:
+
+For each word i, iterate over all previous words j (where j < i).
+
+If groups[i] != groups[j] and differByOneChar(words[i], words[j]), update dp[i] if a longer subsequence is found.
+
+Track the maximum subsequence length (maxi).
+
+Reconstruct the Subsequence:
+
+Find the index where dp[i] = maxi.
+
+Use the parent array to backtrack and reconstruct the subsequence.
+
+Reverse the result to maintain the correct order.
+
+Return Lexicographically Smallest Subsequence:
+
+If multiple subsequences of the same maximum length exist, the one reconstructed first (due to iteration order) will be lexicographically smallest.
+
+Complexity Analysis:
+Time Complexity:
+
+differByOneChar takes O(L) per pair, where L is the word length.
+
+DP nested loops take O(N^2 * L) in the worst case.
+
+Overall: O(N^2 * L).
+
+Space Complexity:
+
+O(N) for dp and parent arrays.
+
+O(N) for the result subsequence.
+
+Overall: O(N).
+
+Solution Code:
+cpp
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+bool differByOneChar(string word1, string word2) {
+    if (word1.length() != word2.length()) return false;
+    int diffCount = 0;
+    for (int i = 0; i < word1.length(); i++) 
+        diffCount += word1[i] != word2[i];
+    return diffCount == 1;
+}
+
+vector<string> getWordsInLongestSubsequence(vector<string>& words, vector<int>& groups) {
+    int n = groups.size();
+    vector<int> dp(n, 1), parent(n, -1);
+    int maxi = 0;
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < i; j++) {
+            if (groups[i] != groups[j] && 
+                    differByOneChar(words[i], words[j]) {
+                if (dp[i] < dp[j] + 1) {
+                    dp[i] = dp[j] + 1;
+                    parent[i] = j;
+                }
+            }
+        }
+        maxi = max(maxi, dp[i]);
+    }
+    
+    vector<string> result;
+    for (int i = 0; i < n; i++) {
+        if (maxi == dp[i]) {
+            while (i != -1) {
+                result.push_back(words[i]);
+                i = parent[i];
+            }
+            break;
+        }
+    }
+    reverse(result.begin(), result.end());
+    return result;
+}
+Explanation:
+differByOneChar:
+
+Checks if two words differ by exactly one character by counting mismatches.
+
+DP Initialization:
+
+dp[i] starts at 1 (each word is a subsequence of length 1).
+
+parent[i] is initialized to -1 (no predecessor).
+
+DP Transition:
+
+For each i, check all j < i:
+
+If groups[i] != groups[j] and words[i] and words[j] differ by one character, update dp[i] if a longer subsequence is found.
+
+Record the predecessor in parent[i].
+
+Reconstructing Subsequence:
+
+Find the index with dp[i] = maxi.
+
+Backtrack using parent to collect words in reverse order.
+
+Reverse the result to get the correct order.
