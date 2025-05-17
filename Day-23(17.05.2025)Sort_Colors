@@ -1,0 +1,112 @@
+Problem Statement:
+Given an array nums consisting of integers representing colors (0, 1, and 2), sort the array in-place such that all 0's come first, followed by all 1's, and then all 2's. This is also known as the Dutch National Flag problem.
+
+Stepwise Approach:
+Step 1: Understand the Problem
+The array contains only three distinct integers: 0, 1, and 2.
+
+We need to sort the array in-place (without using extra space) such that all 0's come first, followed by 1's, and then 2's.
+
+Step 2: Brute Force Approach (Bubble Sort)
+The given code uses a nested loop to compare each element with every other element and swaps them if they are out of order.
+
+This approach is inefficient with a time complexity of O(N²).
+
+Step 3: Optimized Approach (Dutch National Flag Algorithm)
+Instead of using a nested loop, we can solve this problem in O(N) time using three pointers:
+
+low: Tracks the boundary of 0's.
+
+mid: Used to traverse the array.
+
+high: Tracks the boundary of 2's.
+
+The algorithm works as follows:
+
+If nums[mid] == 0, swap it with nums[low] and move both low and mid forward.
+
+If nums[mid] == 1, just move mid forward.
+
+If nums[mid] == 2, swap it with nums[high] and move high backward.
+
+Solution Code:
+Brute Force (Given Code)
+cpp
+void sortColors(vector<int>& nums) {
+    for(int i = 0; i < nums.size(); i++) {
+        for(int j = i; j < nums.size(); j++) {
+            if(nums[i] > nums[j]) {
+                swap(nums[i], nums[j]);
+            }
+        }
+    }
+}
+Optimized Dutch National Flag Algorithm
+cpp
+void sortColors(vector<int>& nums) {
+    int low = 0, mid = 0, high = nums.size() - 1;
+    while (mid <= high) {
+        if (nums[mid] == 0) {
+            swap(nums[low], nums[mid]);
+            low++;
+            mid++;
+        } else if (nums[mid] == 1) {
+            mid++;
+        } else { // nums[mid] == 2
+            swap(nums[mid], nums[high]);
+            high--;
+        }
+    }
+}
+Explanation:
+Brute Force Approach:
+
+Uses nested loops to compare and swap elements.
+
+Time Complexity: O(N²) (Inefficient for large arrays).
+
+Space Complexity: O(1) (In-place sorting).
+
+Optimized Dutch National Flag Algorithm:
+
+Uses three pointers (low, mid, high) to partition the array into three regions (0's, 1's, 2's).
+
+Time Complexity: O(N) (Single pass through the array).
+
+Space Complexity: O(1) (No extra space used).
+
+Example:
+Input:
+nums = [2, 0, 2, 1, 1, 0]
+
+Optimized Approach Steps:
+
+low = 0, mid = 0, high = 5
+
+nums[mid] = 2 → Swap with high, high-- → [0, 0, 2, 1, 1, 2]
+
+nums[mid] = 0 → Swap with low, low++, mid++ → [0, 0, 2, 1, 1, 2]
+
+nums[mid] = 0 → Swap with low, low++, mid++ → [0, 0, 2, 1, 1, 2]
+
+nums[mid] = 2 → Swap with high, high-- → [0, 0, 1, 1, 2, 2]
+
+nums[mid] = 1 → mid++
+
+nums[mid] = 1 → mid++
+
+Loop ends (mid > high).
+
+Final Output: [0, 0, 1, 1, 2, 2]
+
+Time & Space Complexity:
+Approach	Time Complexity	Space Complexity
+Brute Force	O(N²)	O(1)
+Dutch National Flag	O(N)	O(1)
+Conclusion:
+The Brute Force approach works but is inefficient for large arrays.
+
+The Dutch National Flag Algorithm is optimal, solving the problem in O(N) time with O(1) space.
+
+Recommendation: Always use the optimized approach for sorting problems with limited distinct values.
+
