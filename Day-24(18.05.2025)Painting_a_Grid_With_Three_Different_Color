@@ -1,0 +1,274 @@
+Problem Statement: Grid Coloring with Constraints
+Given a grid of size m x n, you need to color each cell using one of three colors (0, 1, or 2) such that no two adjacent cells (horizontally or vertically) have the same color. Return the number of valid colorings modulo 1e9+7
+
+Example:
+Input: m = 1, n = 1
+Output: 3
+Explanation:
+
+Only one cell, which can be colored in 3 ways (0, 1, or 2).
+
+Input: m = 1, n = 2
+Output: 6
+Explanation:
+
+Possible colorings: (0,1), (0,2), (1,0), (1,2), (2,0), (2,1).
+
+Input: m = 2, n = 2
+Output: 18
+Explanation:
+
+There are 18 valid ways to color a 2x2 grid under the given constraints.
+
+Stepwise Approach
+Intuition:
+The problem resembles graph coloring with constraints.
+
+For each column, the coloring must not conflict with the previous column.
+
+We can model this using dynamic programming (DP) where:
+
+States represent valid color patterns for a column.
+
+Transitions ensure adjacent columns have no color conflicts.
+
+Algorithm:
+Generate all valid column patterns:
+
+Use backtracking to generate all possible colorings for a column of size m where no two adjacent cells in the column have the same color.
+
+Check compatibility between patterns:
+
+Two patterns are compatible if no cell in the same row has the same color in both patterns.
+
+Dynamic Programming setup:
+
+dp[i][j] represents the number of ways to color the grid up to column j ending with pattern i.
+
+Initialize dp for the first column (each pattern can be chosen in 1 way).
+
+DP transitions:
+
+For each subsequent column, update the DP state by summing over all compatible patterns from the previous column.
+
+Result computation:
+
+Sum all valid patterns for the last column to get the total number of colorings.
+
+Complexity Analysis:
+Time Complexity:
+
+Generating patterns: 
+O
+(
+3
+m
+)
+O(3 
+m
+ ) (backtracking).
+
+Checking compatibility: 
+O
+(
+3
+2
+m
+⋅
+m
+)
+O(3 
+2m
+ ⋅m).
+
+DP transitions: 
+O
+(
+n
+⋅
+3
+2
+m
+)
+O(n⋅3 
+2m
+ ).
+
+Overall: 
+O
+(
+n
+⋅
+3
+2
+m
+⋅
+m
+)
+O(n⋅3 
+2m
+ ⋅m) (feasible for small m).
+
+Space Complexity:
+
+O
+(
+3
+m
+)
+O(3 
+m
+ ) for storing patterns and DP states.
+
+Solution Code
+cpp
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    void generatePatterns(int m, vector<vector<int>>& patterns, vector<int>& curr) {
+        if (curr.size() == m) {
+            patterns.push_back(curr);
+            return;
+        }
+        for (int c = 0; c < 3; c++) {
+            if (curr.empty() || curr.back() != c) {
+                curr.push_back(c);
+                generatePatterns(m, patterns, curr);
+                curr.pop_back();
+            }
+        }
+    }
+
+    int colorTheGrid(int m, int n) {
+        const int MOD = 1e9 + 7;
+        vector<vector<int>> patterns;
+        vector<int> curr;
+        generatePatterns(m, patterns, curr);
+        int pcount = patterns.size();
+        vector<vector<int>> compatible(pcount);
+
+        // Precompute compatible patterns
+        for (int i = 0; i < pcount; i++) {
+            for (int j = 0; j < pcount; j++) {
+                bool valid = true;
+                for (int k = 0; k < m; k++) {
+                    if (patterns[i][k] == patterns[j][k]) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid) {
+                    compatible[i].push_back(j);
+                }
+            }
+        }
+
+        vector<int> dp(pcount, 1); // Base case: first column
+
+        for (int col = 1; col < n; col++) {
+            vector<int> new_dp(pcount, 0);
+            for (int i = 0; i < pcount; i++) {
+                for (int j : compatible[i]) {
+                    new_dp[j] = (new_dp[j] + dp[i]) % MOD;
+                }
+            }
+            dp = new_dp;
+        }
+
+        int res = 0;
+        for (int x : dp) {
+            res = (res + x) % MOD;
+        }
+        return res;
+    }
+};
+Explanation:
+Pattern Generation (generatePatterns):
+
+Recursively generates all valid column colorings where no two adjacent cells in the column have the same color.
+
+Example for m = 2: [0,1], [0,2], [1,0], [1,2], [2,0], [2,1].
+
+Compatibility Check:
+
+For each pair of patterns, checks if they can be placed in adjacent columns without any row having the same color.
+
+Example: [0,1] is compatible with [1,0] and [1,2] but not with [0,1].
+
+Dynamic Programming:
+
+dp[i] tracks the number of ways to color up to the current column ending with pattern i.
+
+For each new column, updates new_dp by summing over all compatible patterns from the previous column.
+
+Result Calculation:
+
+Sums all dp values for the last column to get the total valid colorings modulo 
+1e9+7
+
+
+
+class Solution {
+public:
+     void genpatterns(int m,vector<vector<int>>&patterns,vector<int>&curr)
+     {
+        if(curr.size()==m)
+        {
+            patterns.push_back(curr);
+            return;
+        }
+        for(int c=0;c<3;c++)
+        {
+            if(curr.empty() || curr.back()!=c)
+            {
+                curr.push_back(c);
+                genpatterns(m,patterns,curr);
+                curr.pop_back();
+            }
+        }
+     }
+    int colorTheGrid(int m, int n) {
+        int MOD=1e9+7;
+        vector<vector<int>>patterns;
+        vector<int>curr;
+        genpatterns(m,patterns,curr);
+        int pcount=patterns.size();
+        vector<vector<int>>compatible(pcount);
+        for(int i=0;i<pcount;i++)
+        {
+            for(int j=0;j<pcount;j++)
+            {
+                bool t=true;
+                for(int k=0;k<m;k++)
+                {
+                    if(patterns[i][k]==patterns[j][k])
+                    {
+                        t=false;
+                        break;
+                    }
+                }
+                if(t)
+                compatible[i].push_back(j);
+            }
+        }
+        vector<int>dp(pcount,1);
+        for(int col=1;col<n;col++)
+        {
+            vector<int>newdp(pcount,0);
+            for(int i=0;i<pcount;i++)
+            {
+                for(int j:compatible[i])
+                {
+                    newdp[j]=(newdp[j]+dp[i])%MOD;
+                }
+            }
+            dp=newdp;
+        }
+        int res=0;
+        for(int x:dp)
+        res=(res+x)%MOD;
+        return res;
+    }
+};
