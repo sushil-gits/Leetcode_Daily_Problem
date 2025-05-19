@@ -1,0 +1,81 @@
+Problem Statement:
+Given an array of three integers representing the lengths of the sides of a triangle, determine the type of the triangle. The possible types are:
+
+Equilateral: All three sides are equal.
+
+Isosceles: Exactly two sides are equal.
+
+Scalene: All sides are of different lengths.
+
+None: The given sides cannot form a valid triangle.
+
+The solution should return the type of the triangle as a string.
+
+Stepwise Approach:
+Sort the Array:
+
+First, sort the array in non-decreasing order. This allows us to easily access the smallest, middle, and largest sides of the triangle.
+
+Check Triangle Validity:
+
+For three lengths to form a valid triangle, the sum of the two smaller sides must be greater than the largest side. This is known as the triangle inequality theorem.
+
+If nums[0] + nums[1] <= nums[2], the sides cannot form a triangle, and we return "none".
+
+Determine Triangle Type:
+
+If the sides can form a triangle, check the following conditions in order:
+
+Equilateral: All three sides are equal (nums[0] == nums[1] && nums[1] == nums[2]).
+
+Isosceles: Exactly two sides are equal (either nums[0] == nums[1] or nums[1] == nums[2]).
+
+Scalene: If none of the above conditions are met, all sides are of different lengths.
+
+Return the Result:
+
+Return the appropriate string based on the above checks.
+
+Solution Code:
+cpp
+#include <vector>
+#include <algorithm>
+#include <string>
+
+using namespace std;
+
+string triangleType(vector<int>& nums) {
+    // Step 1: Sort the array to easily access the sides in order
+    sort(nums.begin(), nums.end());
+    
+    // Step 2: Check if the sides can form a valid triangle
+    if (nums[0] + nums[1] > nums[2]) {
+        // Step 3: Determine the type of triangle
+        if (nums[0] == nums[1] && nums[1] == nums[2]) {
+            return "equilateral";
+        } else if (nums[0] == nums[1] || nums[1] == nums[2]) {
+            return "isosceles";
+        } else {
+            return "scalene";
+        }
+    } else {
+        // Step 4: Return "none" if not a valid triangle
+        return "none";
+    }
+}
+Explanation:
+Sorting the Array: By sorting the array, we ensure that the smallest sides are at the beginning, and the largest side is at the end. This simplifies the validity check and the type determination.
+
+Triangle Validity Check: The triangle inequality theorem states that the sum of any two sides must be greater than the third side. After sorting, we only need to check if the sum of the two smallest sides is greater than the largest side.
+
+Type Determination:
+
+If all sides are equal, it's an equilateral triangle.
+
+If exactly two sides are equal, it's an isosceles triangle.
+
+If all sides are different, it's a scalene triangle.
+
+Edge Handling: If the sides do not satisfy the triangle inequality, the function returns "none", indicating no valid triangle can be formed.
+
+
