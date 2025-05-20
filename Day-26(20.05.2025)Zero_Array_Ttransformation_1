@@ -1,0 +1,122 @@
+Problem Statement:
+Given an array nums of non-negative integers and a list of range queries queries, where each query is represented as [l, r], the task is to decrement each element in the range [l, r] of nums by 1 (if the element is not already zero). After processing all the queries, determine if all elements in nums have been reduced to zero.
+
+Stepwise Approach:
+1. Brute Force Approach (Commented in the Code):
+Step 1: Iterate over each query in queries.
+
+Step 2: For each query [l, r], iterate over the range [l, r] in nums.
+
+Step 3: If nums[j] is not zero, decrement it by 1.
+
+Step 4: After processing all queries, check if all elements in nums are zero.
+
+Time Complexity: O(m * n), where m is the number of queries and n is the size of nums. This approach is inefficient for large inputs and results in a time limit exceeded error.
+
+2. Optimized Approach (Difference Array Technique):
+Step 1: Initialize a difference array d of size n (same as nums) with all elements set to zero.
+
+Step 2: Process each query [l, r]:
+
+Increment d[l] by 1 to mark the start of the range where decrements should be applied.
+
+Decrement d[r + 1] by 1 (if r + 1 < n) to mark the end of the range.
+
+Step 3: Compute the prefix sum of the difference array d to get the total number of decrements (dec) applied to each index in nums.
+
+Step 4: Iterate through nums and for each element nums[i], check if nums[i] - dec > 0. If true, return false because the element cannot be reduced to zero with the given queries.
+
+Step 5: If all elements satisfy nums[i] - dec <= 0, return true.
+
+Time Complexity: O(m + n), which is efficient for large inputs.
+
+Space Complexity: O(n) for the difference array.
+
+Optimized Solution Code:
+cpp
+class Solution {
+public:
+    bool isZeroArray(vector<int>& nums, vector<vector<int>>& queries) {
+        int n = nums.size();
+        vector<int> d(n, 0);  // Difference array
+
+        // Process each query
+        for (auto q : queries) {
+            int l = q[0], r = q[1];
+            d[l]++;
+            if (r + 1 < n) {
+                d[r + 1]--;
+            }
+        }
+
+        // Compute prefix sum to get the number of decrements
+        int dec = 0;
+        for (int i = 0; i < n; ++i) {
+            dec += d[i];
+            if (nums[i] - dec > 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
+Explanation:
+Difference Array (d): This array efficiently marks the start and end of ranges where decrements should be applied, allowing range updates in O(1) time per query.
+
+Prefix Sum Calculation: The prefix sum of d gives the total number of times each element in nums should be decremented.
+
+Final Check: By comparing nums[i] with the computed decrements (dec), we determine if all elements can be reduced to zero.
+
+Edge Cases:
+Empty nums: Return true as there are no elements to check.
+
+Empty queries: Return true only if all elements in nums are already zero.
+
+Large Inputs: The optimized approach efficiently handles large inputs due to its linear time complexity.
+
+class Solution {
+public:
+    bool isZeroArray(vector<int>& nums, vector<vector<int>>& queries) {
+
+        int n=nums.size();
+        // brutt force approach --------gives time limit exceeded
+        // for(int i=0;i<n;i++)
+        // {
+        //     for(int j=queries[i][0];j<=queries[i][1];j++)
+        //     {
+        //         if(nums[j]==0)
+        //         continue;
+        //         nums[j]--;
+        //     }
+        // }
+        // for(int i=0;i<nums.size();i++)
+        // {
+        //     if(nums[i]!=0)
+        //     return false;
+        // }
+        // return true;
+
+
+        // optimized approach 
+        vector<int>d(n,0);
+        for (auto q : queries) {
+        int l = q[0], r = q[1];
+        d[l]++;
+        if (r + 1 < n) {
+            d[r + 1]--;
+        }
+    }
+
+    // Compute prefix sum to get the number of decrements
+    int dec = 0;
+    for (int i = 0; i < n; ++i) {
+        dec += d[i];
+        if (nums[i] - dec > 0) {
+            return false;
+        }
+    }
+
+    return true;
+    }
+};
