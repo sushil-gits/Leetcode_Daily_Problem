@@ -1,0 +1,116 @@
+Problem Statement: Set Matrix Zeroes
+Given an m x n integer matrix, if an element is 0, set its entire row and column to 0's. You must do this in-place, meaning you should modify the given matrix directly without using extra space (except for a few variables).
+
+Example 1:
+Input:
+
+[
+  [1, 1, 1],
+  [1, 0, 1],
+  [1, 1, 1]
+]
+Output:
+
+[
+  [1, 0, 1],
+  [0, 0, 0],
+  [1, 0, 1]
+]
+Example 2:
+Input:
+
+[
+  [0, 1, 2, 0],
+  [3, 4, 5, 2],
+  [1, 3, 1, 5]
+]
+Output:
+
+[
+  [0, 0, 0, 0],
+  [0, 4, 5, 0],
+  [0, 3, 1, 0]
+]
+Stepwise Approach:
+Initialization:
+
+Get the dimensions of the matrix: m (number of columns) and n (number of rows).
+
+Initialize a variable c = 1 to track whether the first column needs to be zeroed out.
+
+Mark Rows and Columns to be Zeroed:
+
+Traverse the matrix row-wise.
+
+If matrix[i][j] == 0:
+
+Mark the corresponding row (matrix[i][0] = 0).
+
+Mark the corresponding column:
+
+If j != 0, set matrix[0][j] = 0.
+
+If j == 0, set c = 0 (indicating the first column should be zeroed later).
+
+Zero Out Cells Based on Marks (Except First Row and Column):
+
+Traverse the matrix from (1,1) to (n-1, m-1).
+
+If the first cell of the row (matrix[i][0]) or column (matrix[0][j]) is 0, set matrix[i][j] = 0.
+
+Zero Out the First Row if Needed:
+
+If matrix[0][0] == 0, set all cells in the first row (matrix[0][j]) to 0.
+
+Zero Out the First Column if Needed:
+
+If c == 0, set all cells in the first column (matrix[i][0]) to 0.
+
+Why This Approach Works?
+Instead of using extra space, we use the first row and first column of the matrix to mark which rows and columns should be zeroed.
+
+We handle the first column separately (c) because matrix[0][0] overlaps for both the first row and column.
+
+This ensures an in-place modification with O(1) space complexity (excluding input storage).
+
+Time Complexity:
+O(m × n) (We traverse the matrix twice).
+
+Space Complexity:
+O(1) (No additional space is used except for a few variables).
+
+
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        int m=matrix[0].size();
+        int n=matrix.size();
+        int c=1;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(matrix[i][j]==0){
+                    if(j!=0)matrix[0][j]=0;
+                    else c=0;
+                    matrix[i][0]=0;
+                }
+            }
+        }
+        for(int i=1;i<n;i++){
+            for(int j=1;j<m;j++){
+                if(matrix[0][j]==0||matrix[i][0]==0){
+                    matrix[i][j]=0;
+                }
+            }
+        }
+        if(matrix[0][0]==0){
+            for(int j=1;j<m;j++){
+                matrix[0][j]=0;
+            }
+        }
+        if(c==0){
+            for(int i=0;i<n;i++){
+                matrix[i][0]=0;
+            }
+        }
+    }
+};
