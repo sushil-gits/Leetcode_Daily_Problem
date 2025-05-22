@@ -1,0 +1,201 @@
+Problem Statement
+Given an array nums and a list of queries, where each query is represented as [start, end], determine the maximum number of queries that can be removed such that for every index i in nums, at least nums[i] queries cover it (i.e., start ≤ i ≤ end). If it's impossible to satisfy the condition, return -1.
+
+Example:
+Input:
+
+nums = [2, 3, 1, 1]
+
+queries = [[0, 2], [1, 3], [2, 3], [0, 1]]
+
+Output: 1
+
+Explanation:
+
+We can remove [0,1] (or [2,3]), and the remaining queries satisfy:
+
+nums[0] = 2 (covered by [0,2], [1,3]),
+
+nums[1] = 3 (covered by [0,2], [1,3], [0,1]),
+
+nums[2] = 1 (covered by [2,3]),
+
+nums[3] = 1 (covered by [1,3]).
+
+Approach
+Intuition
+Sort Queries → Process queries in ascending order of their start times.
+
+Use Two Heaps:
+
+Max-Heap (maxHeap) → Stores queries not yet used, sorted by their end times (to greedily pick queries that cover the longest remaining intervals).
+
+Min-Heap (minHeap) → Stores active queries (those currently covering the current index i), sorted by end times (to quickly remove expired queries).
+
+Greedy Selection → At each index i:
+
+Add all queries starting at i to maxHeap.
+
+Remove expired queries from minHeap.
+
+Use queries from maxHeap to satisfy nums[i] (pick the longest remaining queries first).
+
+If nums[i] cannot be satisfied, return -1.
+
+Algorithm Steps
+Sort Queries → O(Q log Q) (where Q = queries.size()).
+
+Initialize Heaps → O(1).
+
+Iterate Over nums → For each i from 0 to n-1:
+
+Add Queries Starting at i → Push into maxHeap (O(log Q) per insertion).
+
+Remove Expired Queries → Pop from minHeap if end < i (O(log Q) per removal).
+
+Satisfy nums[i] → Transfer queries from maxHeap to minHeap until nums[i] is met (O(log Q) per transfer).
+
+Check Feasibility → If nums[i] cannot be met, return -1.
+
+Return Result → Q - usedQueries (O(1)).
+
+Solution Code
+cpp
+#include <vector>
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
+int maxRemoval(vector<int>& nums, vector<vector<int>>& queries) {
+    int n = nums.size();
+    int usedQueries = 0;
+    sort(queries.begin(), queries.end()); // Sort queries by start time
+    
+    priority_queue<int> maxHeap; // Max-heap to store end times of unused queries
+    priority_queue<int, vector<int>, greater<>> minHeap; // Min-heap to track active queries
+    
+    int j = 0; // Pointer to track queries
+    
+    for (int i = 0; i < n; ++i) {
+        // Add all queries starting at 'i' to maxHeap
+        while (j < queries.size() && queries[j][0] == i) {
+            maxHeap.push(queries[j][1]);
+            ++j;
+        }
+        
+        // Remove expired queries from minHeap (end < i)
+        while (!minHeap.empty() && minHeap.top() < i) {
+            minHeap.pop();
+        }
+        
+        // Adjust nums[i] by subtracting already active queries
+        nums[i] -= minHeap.size();
+        
+        // Use queries from maxHeap to satisfy nums[i]
+        while (nums[i] > 0 && !maxHeap.empty() && maxHeap.top() >= i) {
+            int end = maxHeap.top();
+            maxHeap.pop();
+            minHeap.push(end);
+            ++usedQueries;
+            --nums[i];
+        }
+        
+        // If nums[i] is still not satisfied, return -1
+        if (nums[i] > 0) {
+            return -1;
+        }
+    }
+    
+    return queries.size() - usedQueries;
+}
+Complexity Analysis
+Operation	Time Complexity	Space Complexity
+Sorting Queries	O(Q log Q)	O(1)
+Processing Each Index (i)	O(Q log Q)	O(Q)
+Total	O(Q log Q)	O(Q)
+Breakdown:
+Sorting Queries → O(Q log Q) (dominates if Q > N).
+
+Heap Operations → Each query is pushed/popped at most once (O(log Q) per operation).
+
+Space → Storing queries in heaps (O(Q)).
+
+Key Insights
+Greedy Selection → Always pick the query with the latest end time to maximize coverage for future indices.
+
+
+
+class Solution {
+public:
+    int maxRemoval(vector<int>& nums, vector<vector<int>>& queries) {
+      
+    //   Time limit exceeded--
+
+        // sort(queries.begin(), queries.end());
+        // int n=queries.size();
+        // int m=nums.size();
+        // priority_queue<int>q;
+        // priority_queue<int, vector<int>, greater<int>>p;
+        // int count = 0;
+        // for (int i=0; i<m; i++) 
+        // {
+        //     int k=0;
+        //     while (!p.empty() && p.top() <i)
+        //     {
+        //         q.pop();
+        //     }
+        //      while (k <n && queries[k][0] <=i) 
+        //      {
+        //         q.push(queries[k++][1]);
+        //      }
+        //      while (p.size() < nums[i] && !q.empty() && q.top() >=i)
+        //      {
+        //         p.push(q.top());
+        //         q.pop();
+        //         count++;
+        //      }
+        //         if (p.size() < nums[i])
+        //         return -1;
+        // }
+        // return n-count;
+
+
+
+        // optimized approach
+        int n=nums.size();
+        int usedQueries=0;
+        sort(begin(queries),end(queries));
+        priority_queue<int>maxHeap;
+        priority_queue<int,vector<int>,greater<>>minHeap;
+        int j=0;
+        for(int i=0;i<n;i++)
+        {
+            while(j<queries.size() && queries[j][0]==i)
+            {
+                maxHeap.push(queries[j][1]);
+                j++;
+            }
+            nums[i]-=minHeap.size();
+            while(nums[i]>0 && !maxHeap.empty() && maxHeap.top()>=i)
+            {
+                int top=maxHeap.top(); maxHeap.pop();
+                minHeap.push(top);
+                usedQueries++;
+                nums[i]--;
+            }
+            
+            if(nums[i]>0) return -1;
+
+            while(!minHeap.empty() && minHeap.top()<=i)
+            {
+                minHeap.pop();
+            }
+        }
+        return queries.size()-usedQueries;
+    }
+};
+
+Heap Efficiency → maxHeap helps in selecting the best unused query, while minHeap efficiently removes expired ones.
+
+Early Termination → If nums[i] cannot be satisfied at any point, immediately return -1.
