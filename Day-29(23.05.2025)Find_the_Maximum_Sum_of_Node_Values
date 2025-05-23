@@ -1,0 +1,115 @@
+Problem Statement: Maximum Value Sum After K Operations
+You are given:
+
+An array nums of integers representing the values of nodes in a tree.
+
+An integer k.
+
+A list of edges representing the tree's undirected edges (each edge connects two nodes).
+
+You can perform the following operation any number of times (including zero):
+
+Choose any node and apply XOR with k to its value.
+
+However, there is a restriction:
+
+If you perform the operation on one node, all adjacent nodes (connected by an edge) will automatically undergo the same operation in subsequent steps, propagating until no new nodes are left.
+
+Your task is to compute the maximum possible sum of the node values after performing any number of such operations, following the given propagation rule.
+
+Constraints:
+The tree is connected and has n nodes.
+
+1 <= nums.length <= 2 * 10^4
+
+0 <= nums[i] <= 10^9
+
+0 <= k <= 10^9
+
+Stepwise Approach
+Key Insight:
+Tree Structure & XOR Propagation:
+
+Since the tree is connected and undirected, flipping (XORing) one node's value with k will eventually propagate to all other nodes due to the adjacency rule.
+
+However, each XOR operation on a node toggles its value twice (once when directly flipped, and once when propagated back from neighbors).
+
+Hence, each node's value can only be toggled (XORed with k) either 0 or 1 time (because toggling twice cancels out the effect).
+
+Optimal XOR Decisions:
+
+For each node, compare nums[i] and nums[i] ^ k.
+
+If nums[i] ^ k > nums[i], it is beneficial to flip the node (add nums[i] ^ k to the sum).
+
+Otherwise, keep the original value (add nums[i] to the sum).
+
+Handling Odd Flips:
+
+The total number of beneficial flips (canInc) must be even because each flip operation affects two nodes (due to propagation).
+
+If canInc is odd, we must exclude the smallest loss (i.e., the smallest difference between a node's original and flipped value) to maximize the sum.
+
+Algorithm Steps:
+Initialize Variables:
+
+ans = Total sum after making optimal XOR decisions.
+
+minLoss = Smallest absolute difference between a node's original and flipped value (to handle odd flips).
+
+canInc = Count of nodes where flipping increases the value.
+
+Iterate Over Each Node:
+
+For each node, compute nums[i] ^ k.
+
+If flipping is beneficial (nums[i] ^ k > nums[i]):
+
+Add the flipped value to ans.
+
+Increment canInc.
+
+Else:
+
+Add the original value to ans.
+
+Track the smallest loss (minLoss) between nums[i] and nums[i] ^ k.
+
+Check for Odd Flipping Count:
+
+If canInc is even, return ans.
+
+If canInc is odd, subtract minLoss from ans (to balance the flip count).
+
+Solution Code:
+cpp
+long long maximumValueSum(vector<int>& nums, int k, vector<vector<int>>& edges) {
+    long long ans = 0;
+    int minLoss = INT_MAX;
+    int canInc = 0;
+
+    for(int i = 0; i < nums.size(); i++) {
+        if((nums[i] ^ k) > nums[i]) {
+            ans += (nums[i] ^ k);
+            canInc++;
+        } else {
+            ans += nums[i];
+        }
+        minLoss = min(minLoss, abs(nums[i] - (nums[i] ^ k)));
+    }
+
+    if(canInc % 2 == 0) {
+        return ans;
+    } else {
+        return ans - minLoss;
+    }
+}
+Complexity Analysis:
+Time Complexity: O(n), where n is the number of nodes (since we process each node once).
+
+Space Complexity: O(1) (constant extra space is used).
+
+
+
+
+
