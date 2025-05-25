@@ -1,0 +1,86 @@
+Problem Statement: Longest Palindrome from a List of Words
+Given a list of strings words, where each string consists of two lowercase English letters, return the length of the longest palindrome that can be formed by concatenating some of the words.
+
+A palindrome reads the same forwards and backwards. The rules for forming the palindrome are:
+
+Each word can be used at most once.
+
+The palindrome must consist of words in some order.
+
+If a word and its reverse both exist, they can be paired to form part of the palindrome (e.g., "ab" and "ba").
+
+A word that reads the same forwards and backwards (e.g., "aa", "bb") can be placed in the center of the palindrome if it appears an odd number of times.
+
+Stepwise Approach
+Count Frequencies
+
+Use a hashmap (unordered_map) to store the frequency of each word in words.
+
+Initialize Variables
+
+ans → Stores the total length of the palindrome.
+
+hasCenter → A boolean flag to check if a central pair (like "aa") is available.
+
+Process Each Word
+
+For each word in the frequency map:
+
+Case 1: The word is a palindrome (e.g., "aa")
+
+Calculate how many pairs can be formed (count / 2).
+
+Each pair contributes 4 letters ("aa" + "aa" → "aaaa").
+
+If there’s an odd count, set hasCenter = true (one "aa" can be used in the center).
+
+Case 2: The word has a reverse pair (e.g., "ab" and "ba")
+
+Take the minimum of the counts of the word and its reverse.
+
+Each pair contributes 4 letters ("ab" + "ba" → "abba").
+
+Mark the reverse word as processed (freq[rev] = 0) to avoid duplicate counting.
+
+Add Central Pair (if applicable)
+
+If hasCenter is true, add 2 to the answer (for a central pair like "aa").
+
+Return the Result
+
+The total length (ans) is the longest possible palindrome.
+
+Final Code
+cpp
+int longestPalindrome(vector<string>& words) {
+    unordered_map<string, int> freq;
+    for (auto& word : words) {
+        freq[word]++;
+    }
+
+    int ans = 0;
+    bool hasCenter = false;
+
+    for (auto& [word, count] : freq) {
+        string rev = string{word[1], word[0]};
+        if (word == rev) { // Case 1: Palindrome word ("aa", "bb", etc.)
+            ans += (count / 2) * 4;
+            if (count % 2 == 1) hasCenter = true;
+        } else if (freq.count(rev)) { // Case 2: Has a reverse pair ("ab" + "ba")
+            int pairs = min(count, freq[rev]);
+            ans += pairs * 4;
+            freq[rev] = 0; // Mark as processed to avoid double-counting
+        }
+    }
+
+    if (hasCenter) ans += 2; // Add central pair if available
+    return ans;
+}
+Example
+Input: words = ["ab", "ba", "aa", "aa", "bb"]
+Explanation:
+
+Pairs: "ab" + "ba" (length 4), "aa" + "aa" (length 4), and "bb" (length 2, center).
+
+Total Length: 4 + 4 + 2 = 10 → "abaaaaba" or similar.
+Output: 10
