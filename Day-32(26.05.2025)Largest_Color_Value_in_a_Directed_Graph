@@ -1,0 +1,123 @@
+Problem Statement:
+Title: Largest Color Value in a Directed Graph
+
+Description:
+Given a directed graph with n nodes labeled from 0 to n-1, each node is colored with a lowercase English letter (colors string). The graph is represented by a list of directed edges (edges).
+
+The color value of a path is defined as the maximum frequency of any color in that path. For example, in the path "aab", the color value is 2 (since 'a' appears twice).
+
+Your task is to find the largest color value among all possible valid paths in the graph. If the graph contains a cycle, return -1 since no valid path can include a cycle.
+
+Examples:
+
+Input:
+colors = "abaca",
+edges = [[0,1],[0,2],[2,3],[3,4]]
+Output: 3
+Explanation:
+
+The path 0 -> 2 -> 3 -> 4 has the color sequence "aaca", where 'a' appears 3 times.
+
+Other paths have smaller color values.
+
+Input:
+colors = "a",
+edges = [[0,0]]
+Output: -1
+Explanation:
+
+The graph contains a self-loop (cycle), so no valid path exists.
+
+Constraints:
+
+1 <= colors.length <= 10^5
+
+0 <= edges.length <= 10^5
+
+edges[i].length == 2
+
+0 <= edges[i][0], edges[i][1] < colors.length
+
+Stepwise Approach:
+Build the Graph and Compute Indegree:
+
+Construct an adjacency list (adj) to represent the graph.
+
+Compute the indegree of each node to identify sources (nodes with indegree = 0).
+
+Initialize DP Table and Queue:
+
+dp[node][c] represents the maximum count of color c encountered in any path ending at node.
+
+Initialize dp such that each node starts with its own color count (dp[node][colors[node] - 'a'] = 1).
+
+Use a queue (q) for topological sorting, starting with nodes having indegree = 0.
+
+Topological Sort with DP Updates:
+
+For each node processed, update its neighbors' dp values by propagating color counts.
+
+Decrement the neighbor's indegree, and if it becomes 0, add it to the queue.
+
+Track the maximum color value encountered (maxColor).
+
+Check for Cycles:
+
+If the number of visited nodes (visited) is less than n, the graph contains a cycle, so return -1.
+
+Otherwise, return maxColor.
+
+Solution Code:
+cpp
+class Solution {
+public:
+    int largestPathValue(string colors, vector<vector<int>>& edges) {
+        int n = colors.size();
+        vector<vector<int>> adj(n);
+        vector<int> indegree(n, 0);
+
+        for (auto& edge : edges) {
+            adj[edge[0]].push_back(edge[1]);
+            indegree[edge[1]]++;
+        }
+
+        vector<vector<int>> dp(n, vector<int>(26, 0));
+        queue<int> q;
+
+        for (int i = 0; i < n; ++i) {
+            if (indegree[i] == 0) q.push(i);
+            dp[i][colors[i] - 'a'] = 1;
+        }
+
+        int visited = 0;
+        int maxColor = 0;
+
+        while (!q.empty()) {
+            int node = q.front(); q.pop();
+            visited++;
+
+            for (int neighbor : adj[node]) {
+                for (int c = 0; c < 26; ++c) {
+                    int inc = (colors[neighbor] - 'a' == c) ? 1 : 0;
+                    dp[neighbor][c] = max(dp[neighbor][c], dp[node][c] + inc);
+                }
+
+                indegree[neighbor]--;
+                if (indegree[neighbor] == 0) q.push(neighbor);
+            }
+
+            maxColor = max(maxColor, *max_element(dp[node].begin(), dp[node].end()));
+        }
+
+        return visited == n ? maxColor : -1;
+    }
+};
+Explanation:
+The algorithm uses Kahn's algorithm for topological sorting to process nodes in a directed acyclic graph (DAG).
+
+Dynamic Programming (DP) is employed to track the maximum frequency of each color along paths ending at each node.
+
+If the graph contains a cycle (visited < n), it returns -1. Otherwise, it returns the largest color value found.
+
+The time complexity is O(n + e), where n is the number of nodes and e is the number of edges, making it efficient for large graphs.
+
