@@ -1,0 +1,112 @@
+🔍 Method 1: int dfs(int node, int parent, const vector<vector<int>>& children, int k)
+Purpose:
+Performs a Depth-First Search (DFS) from a given node, counting how many nodes are reachable within k edges.
+
+Parameters:
+node: current node.
+
+parent: previous node to avoid going back (prevents cycles).
+
+children: adjacency list representation of the tree.
+
+k: maximum depth allowed.
+
+Logic:
+If k < 0, the depth limit is exceeded ⇒ return 0.
+
+Start with res = 1 (counting the current node).
+
+Recursively call dfs on all children (excluding the parent), with k - 1.
+
+Return total nodes reachable within k from node.
+
+🏗️ Method 2: vector<int> build(const vector<vector<int>>& edges, int k)
+Purpose:
+For a given tree (represented by edges) and depth k, return a list where res[i] = number of nodes reachable from node i within k steps.
+
+Steps:
+Compute n, number of nodes (edges.size() + 1 because a tree with n nodes has n-1 edges).
+
+Build the adjacency list children.
+
+For each node i from 0 to n - 1, perform a DFS to count reachable nodes and store it in res[i].
+
+🎯 Method 3: vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2, int k)
+Purpose:
+Given two trees edges1 and edges2, and a depth limit k, calculate for each node in tree1 the maximum number of nodes that can be visited using:
+
+Any node in tree1 as a starting point and depth k.
+
+AND the best-case node in tree2 with depth k - 1.
+
+Logic:
+count1 = build(edges1, k) → for each node in tree1, how many nodes it can reach in depth k.
+
+count2 = build(edges2, k - 1) → for each node in tree2, how many nodes it can reach in depth k - 1.
+
+maxCount2 = *max_element(count2.begin(), count2.end()) → best-case node in tree2.
+
+For each node i in tree1, set res[i] = count1[i] + maxCount2.
+
+This means:
+
+From node i in tree1, assume we can reach count1[i] nodes, and from the best node in tree2 we can reach maxCount2 nodes → so the total is count1[i] + maxCount2.
+
+🧠 Intuition / Use Case
+This setup could model problems where you are allowed to visit nodes in two separate trees, with a maximum depth budget of k in the first and k-1 in the second. It might resemble:
+
+Two-level strategies (e.g. local + remote networks).
+
+Strategic positioning in graph-based games.
+
+Resource allocation across two hierarchies.
+
+🧾 Summary
+Method	Description
+dfs	DFS traversal to count reachable nodes within depth k
+build	Builds adjacency list and calculates reachable counts for all nodes
+maxTargetNodes	Combines best-case reach from both trees under the given depth limits
+
+ --class Solution {
+public:
+    int dfs(int node, int parent, const vector<vector<int>>& children, int k) {
+        if (k < 0) {
+            return 0;
+        }
+        int res = 1;
+        for (int child : children[node]) {
+            if (child == parent) {
+                continue;
+            }
+            res += dfs(child, node, children, k - 1);
+        }
+        return res;
+    }
+
+    vector<int> build(const vector<vector<int>>& edges, int k) {
+        int n = edges.size() + 1;
+        vector<vector<int>> children(n);
+        for (const auto& edge : edges) {
+            children[edge[0]].push_back(edge[1]);
+            children[edge[1]].push_back(edge[0]);
+        }
+        vector<int> res(n);
+        for (int i = 0; i < n; i++) {
+            res[i] = dfs(i, -1, children, k);
+        }
+        return res;
+    }
+
+    vector<int> maxTargetNodes(vector<vector<int>>& edges1,
+                               vector<vector<int>>& edges2, int k) {
+        int n = edges1.size() + 1, m = edges2.size() + 1;
+        vector<int> count1 = build(edges1, k);
+        vector<int> count2 = build(edges2, k - 1);
+        int maxCount2 = *max_element(count2.begin(), count2.end());
+        vector<int> res(n);
+        for (int i = 0; i < n; i++) {
+            res[i] = count1[i] + maxCount2;
+        }
+        return res;
+    }
+};
